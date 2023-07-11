@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BuildVersion</key>
+	<string>614</string>
+	<key>Platform</key>
+	<string>iOS</string>
+	<key>ProductBuildVersion</key>
+	<string>15A5160n</string>
+	<key>ProjectMetadata</key>
+	<array>
+		<dict>
+			<key>Project</key>
+			<string>XCTest</string>
+			<key>Version</key>
+			<string>22138.6</string>
+		</dict>
+		<dict>
+			<key>Project</key>
+			<string>Mercury</string>
+			<key>Version</key>
+			<string>43</string>
+		</dict>
+		<dict>
+			<key>Project</key>
+			<string>JetsamProperties</string>
+			<key>Version</key>
+			<string>1802</string>
+		</dict>
+		<dict>
+			<key>Project</key>
+			<string>GPUToolsDevice_DDI</string>
+			<key>Version</key>
+			<string>1</string>
+		</dict>
+		<dict>
+			<key>Project</key>
+			<string>DTOCMock</string>
+			<key>Version</key>
+			<string>22001</string>
+		</dict>
+		<dict>
+			<key>Project</key>
+			<string>DTDeveloperDiskImageSupport</string>
+			<key>Version</key>
+			<string>14.0.0</string>
+		</dict>
+		<dict>
+			<key>Project</key>
+			<string>CoreDevice</string>
+			<key>Version</key>
+			<string>325.3</string>
+		</dict>
+	</array>
+	<key>Variant</key>
+	<string>Public</string>
+</dict>
+</plist>
