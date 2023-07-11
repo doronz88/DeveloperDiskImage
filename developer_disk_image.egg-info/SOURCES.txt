@@ -1,0 +1,10 @@
+pyproject.toml
+requirements.txt
+developer_disk_image/__init__.py
+developer_disk_image/repo.py
+developer_disk_image.egg-info/PKG-INFO
+developer_disk_image.egg-info/SOURCES.txt
+developer_disk_image.egg-info/dependency_links.txt
+developer_disk_image.egg-info/entry_points.txt
+developer_disk_image.egg-info/requires.txt
+developer_disk_image.egg-info/top_level.txt

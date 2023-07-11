@@ -1,0 +1,2 @@
+[console_scripts]
+developer_disk_image = developer_disk_image.__main__:cli

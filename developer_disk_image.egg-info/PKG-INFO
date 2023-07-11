@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: developer-disk-image
+Version: 0.0.1
+Summary: Download DeveloperDiskImage ans Personalized images from GitHub
+Author-email: doronz88 <doron88@gmail.com>
+Maintainer-email: doronz88 <doron88@gmail.com>
+Project-URL: Homepage, https://github.com/doronz88/DeveloperDiskImage
+Project-URL: Bug Reports, https://github.com/doronz88/DeveloperDiskImage/issues
+Keywords: ios,DeveloperDiskImage
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3 :: Only
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Provides-Extra: test
