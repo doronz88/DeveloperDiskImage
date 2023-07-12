@@ -5,6 +5,8 @@ from typing import Mapping, Optional
 
 import requests
 
+from developer_disk_image.exceptions import GithubRateLimitExceededError
+
 DEVELOPER_DISK_IMAGE_REPO_TREE_URL = \
     'https://api.github.com/repos/doronz88/DeveloperDiskImage/git/trees/main?recursive=true'
 
@@ -23,9 +25,9 @@ class PersonalizedImage:
 
 
 class DeveloperDiskImageRepository:
-    @staticmethod
-    def create() -> 'DeveloperDiskImageRepository':
-        return DeveloperDiskImageRepository(json.loads(requests.get(DEVELOPER_DISK_IMAGE_REPO_TREE_URL).text)['tree'])
+    @classmethod
+    def create(cls) -> 'DeveloperDiskImageRepository':
+        return cls(cls._query(DEVELOPER_DISK_IMAGE_REPO_TREE_URL)['tree'])
 
     def __init__(self, tree: Mapping):
         self._path_urls = {}
@@ -52,4 +54,11 @@ class DeveloperDiskImageRepository:
         url = self._path_urls.get(path, {}).get('url')
         if url is None:
             return None
-        return base64.b64decode(json.loads(requests.get(url).text)['content'])
+        return base64.b64decode(self._query(url)['content'])
+
+    @staticmethod
+    def _query(url: str) -> Mapping:
+        response = json.loads(requests.get(url).text)
+        if response.get('message', '').startswith('API rate limit exceeded'):
+            raise GithubRateLimitExceededError()
+        return response
