@@ -1,3 +1,5 @@
+[![Pypi version](https://img.shields.io/pypi/v/developer_disk_image.svg)](https://pypi.org/project/developer_disk_image/ "PyPi package")
+
 # Overview
 
 Store both types of Apple's DeveloperDiskImage files:
