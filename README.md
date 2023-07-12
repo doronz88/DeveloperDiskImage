@@ -9,8 +9,8 @@ Store both types of Apple's DeveloperDiskImage files:
     - `BuildManifest.plist`
     - Trustcache
 
-The split of the new format is requires for OS* other then macOS then will have trouble mounting the original APFS image
-inside: `~/Library/Developer/DeveloperDiskImages`.
+The split of the new format is requires for OS* other than macOS that will have trouble extracting the original APFS
+image inside: `~/Library/Developer/DeveloperDiskImages`.
 
 # Python package
 
@@ -18,7 +18,7 @@ Additionally, this repo provides a python API for accessing this repository.
 You can install it as follows:
 
 ```shell
-python3 -m pip install developer_disk_image
+python3 -m pip install -U developer_disk_image
 ```
 
 ## Example usage
