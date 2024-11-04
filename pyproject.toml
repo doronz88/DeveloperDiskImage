@@ -35,7 +35,7 @@ test = ["pytest"]
 developer_disk_image = "developer_disk_image.__main__:cli"
 
 [tool.setuptools.packages.find]
-exclude = ["docs*", "tests*"]
+exclude = ["docs*", "tests*", "PersonalizedImages*", "DeveloperDiskImages*"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
