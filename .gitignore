@@ -2,4 +2,6 @@
 .idea
 __pycache__
 build
-*.eff-info
+*.egg-info
+developer_disk_image/_version.py
+dist
