@@ -1,6 +1,5 @@
 [project]
 name = "developer_disk_image"
-version = "0.0.2"
 description = "Download DeveloperDiskImage ans Personalized images from GitHub"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -23,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dynamic = ["dependencies"]
+dynamic = ["dependencies", "version"]
 
 [project.optional-dependencies]
 test = ["pytest"]
@@ -40,7 +39,11 @@ exclude = ["docs*", "tests*"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
+version = { attr = "developer_disk_image._version.__version__" }
+
+[tool.setuptools_scm]
+version_file = "developer_disk_image/_version.py"
 
 [build-system]
-requires = ["setuptools>=43.0.0", "wheel"]
+requires = ["setuptools>=43.0.0", "setuptools_scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
