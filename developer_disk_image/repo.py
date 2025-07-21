@@ -1,6 +1,7 @@
 import base64
 import dataclasses
 import json
+from datetime import datetime, timezone
 from typing import Mapping, Optional
 
 import requests
@@ -29,7 +30,7 @@ class DeveloperDiskImageRepository:
     def create(cls) -> 'DeveloperDiskImageRepository':
         return cls(cls._query(DEVELOPER_DISK_IMAGE_REPO_TREE_URL)['tree'])
 
-    def __init__(self, tree: Mapping, github_token: str=None):
+    def __init__(self, tree: Mapping, github_token: str = None):
         self._path_urls = {}
         for node in tree:
             self._path_urls[node['path']] = node
@@ -66,8 +67,12 @@ class DeveloperDiskImageRepository:
                 'Authorization': 'Bearer ' + github_token,
                 'X-GitHub-Api-Version': '2022-11-28'
             }
-        response = json.loads(requests.get(url, headers=headers).text)
-        if response.get('message', '').startswith('API rate limit exceeded'):
+        response = requests.get(url, headers=headers)
+        content = json.loads(response.text)
+        if content.get('message', '').startswith('API rate limit exceeded'):
+            reset_time = int(response.headers['X-RateLimit-Reset'])
+            reset_utc = datetime.fromtimestamp(reset_time, timezone.utc)
+            reset_local = reset_utc.astimezone()
             raise GithubRateLimitExceededError(
-                "GitHub API rate limit exceeded. Wait some minutes or use a custom GitHub access token")
-        return response
+                f'GitHub API rate limit exceeded. Wait until {reset_local} or use a custom GitHub access token')
+        return content
