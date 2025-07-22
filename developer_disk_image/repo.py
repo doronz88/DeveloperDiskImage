@@ -30,7 +30,7 @@ class DeveloperDiskImageRepository:
     def create(cls) -> 'DeveloperDiskImageRepository':
         return cls(cls._query(DEVELOPER_DISK_IMAGE_REPO_TREE_URL)['tree'])
 
-    def __init__(self, tree: Mapping, github_token: str = None):
+    def __init__(self, tree: Mapping, github_token: Optional[str] = None):
         self._path_urls = {}
         for node in tree:
             self._path_urls[node['path']] = node
@@ -59,7 +59,7 @@ class DeveloperDiskImageRepository:
         return base64.b64decode(self._query(url, github_token=self.github_token)['content'])
 
     @staticmethod
-    def _query(url: str, github_token: str = None) -> Mapping:
+    def _query(url: str, github_token: Optional[str] = None) -> Mapping:
         headers = {}
         if github_token is not None:
             headers = {
