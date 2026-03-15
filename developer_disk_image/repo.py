@@ -5,7 +5,7 @@ from typing import Mapping, Optional, Union
 
 import requests
 
-from developer_disk_image.exceptions import GithubRateLimitExceededError, DeveloperDiskImageException
+from developer_disk_image.exceptions import DeveloperDiskImageException, GithubRateLimitExceededError
 
 DEVELOPER_DISK_IMAGE_REPO_TREE_URL = \
     'https://api.github.com/repos/doronz88/DeveloperDiskImage/git/trees/main?recursive=true'
