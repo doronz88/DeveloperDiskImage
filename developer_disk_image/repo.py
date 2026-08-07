@@ -24,6 +24,28 @@ class PersonalizedImage:
     trustcache: bytes
 
 
+@dataclasses.dataclass
+class CryptexImage:
+    """The Cryptex1 assets cryptexd needs in order to install a DeveloperDiskImage cryptex."""
+    image: bytes
+    build_manifest: bytes
+    trustcache: bytes
+    cryptex_info: bytes
+    root_hash: bytes
+
+
+CRYPTEX_IMAGE_ROOT = 'PersonalizedImages/Xcode_iOS_DDI_Cryptex'
+
+#: Field of `CryptexImage` -> its published file name. Fixed, so the URLs stay predictable across
+#: releases; the published BuildManifest.plist is rewritten to declare these same names.
+CRYPTEX_IMAGE_PAYLOADS = {
+    'image': 'Image.dmg',
+    'trustcache': 'Image.dmg.trustcache',
+    'cryptex_info': 'Image.dmg.cryptex_info',
+    'root_hash': 'Image.dmg.root_hash',
+}
+
+
 class DeveloperDiskImageRepository:
     @classmethod
     def create(cls, github_token: Optional[str] = None) -> 'DeveloperDiskImageRepository':
@@ -51,6 +73,21 @@ class DeveloperDiskImageRepository:
         trustcache = self._get_blob(
             'PersonalizedImages/Xcode_iOS_DDI_Personalized/Image.dmg.trustcache')
         return PersonalizedImage(image=image, build_manifest=build_manifest, trustcache=trustcache)
+
+    def get_cryptex_disk_image(self) -> CryptexImage:
+        """Fetch the Cryptex1 DeveloperDiskImage assets, for installing the DDI over cryptexd.
+
+        Writing these out under their published names reproduces a directory that cryptexd clients
+        accept as-is, since the build manifest shipped alongside them declares those same names.
+        """
+        payloads = {'build_manifest': self._get_blob(f'{CRYPTEX_IMAGE_ROOT}/BuildManifest.plist')}
+        for field, name in CRYPTEX_IMAGE_PAYLOADS.items():
+            payloads[field] = self._get_blob(f'{CRYPTEX_IMAGE_ROOT}/{name}')
+
+        missing = sorted(field for field, blob in payloads.items() if blob is None)
+        if missing:
+            raise DeveloperDiskImageException(f'not published under {CRYPTEX_IMAGE_ROOT}: {", ".join(missing)}')
+        return CryptexImage(**payloads)
 
     def _get_blob(self, path: str) -> Optional[bytes]:
         url = self._path_urls.get(path, {}).get('url')
