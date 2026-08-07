@@ -1,14 +1,18 @@
 import dataclasses
-import json
 from datetime import datetime, timezone
-from typing import Mapping, Optional, Union
+from typing import Optional
 
 import requests
 
 from developer_disk_image.exceptions import DeveloperDiskImageException, GithubRateLimitExceededError
 
-DEVELOPER_DISK_IMAGE_REPO_TREE_URL = \
-    'https://api.github.com/repos/doronz88/DeveloperDiskImage/git/trees/main?recursive=true'
+#: Payloads are served straight off raw.githubusercontent.com rather than through the REST API.
+#: That host is not subject to the API's 60-requests-per-hour anonymous quota, so no token is
+#: needed, and it saves downloading a recursive tree listing of a repository full of disk images
+#: just to resolve a handful of known paths.
+DEVELOPER_DISK_IMAGE_REPO_RAW_URL_FORMAT = \
+    'https://raw.githubusercontent.com/doronz88/DeveloperDiskImage/{ref}/{path}'
+DEFAULT_REF = 'main'
 
 
 @dataclasses.dataclass
@@ -48,15 +52,23 @@ CRYPTEX_IMAGE_PAYLOADS = {
 
 class DeveloperDiskImageRepository:
     @classmethod
-    def create(cls, github_token: Optional[str] = None) -> 'DeveloperDiskImageRepository':
-        tree = cls._query(DEVELOPER_DISK_IMAGE_REPO_TREE_URL, github_token=github_token)['tree']
-        return cls(tree, github_token=github_token)
+    def create(cls, github_token: Optional[str] = None, ref: str = DEFAULT_REF) -> 'DeveloperDiskImageRepository':
+        """Create a repository client. Performs no request of its own.
 
-    def __init__(self, tree: Mapping, github_token: Optional[str] = None):
-        self._path_urls = {}
-        for node in tree:
-            self._path_urls[node['path']] = node
+        :param github_token: optional token, forwarded on every request.
+        :param ref: branch, tag or commit to read. Defaults to `DEFAULT_REF`; pass a commit to read
+            a revision that is not merged yet, which is how CI checks a pull request against the
+            payloads that pull request adds.
+        """
+        return cls(github_token=github_token, ref=ref)
+
+    def __init__(self, github_token: Optional[str] = None, ref: str = DEFAULT_REF):
+        """
+        :param github_token: optional token, forwarded on every request.
+        :param ref: branch, tag or commit to read payloads from.
+        """
         self.github_token = github_token
+        self.ref = ref
 
     def get_developer_disk_image(self, version: str) -> Optional[DeveloperDiskImage]:
         image = self._get_blob(f'DeveloperDiskImages/{version}/DeveloperDiskImage.dmg')
@@ -90,33 +102,24 @@ class DeveloperDiskImageRepository:
         return CryptexImage(**payloads)
 
     def _get_blob(self, path: str) -> Optional[bytes]:
-        url = self._path_urls.get(path, {}).get('url')
-        if url is None:
-            return None
-        return self._query(url, raw=True, github_token=self.github_token)
+        """Fetch one payload, or ``None`` if this revision does not publish it."""
+        url = DEVELOPER_DISK_IMAGE_REPO_RAW_URL_FORMAT.format(ref=self.ref, path=path)
+        headers = {}
+        if self.github_token is not None:
+            headers['Authorization'] = 'Bearer ' + self.github_token
 
-    @staticmethod
-    def _query(url: str, raw: bool = False, github_token: Optional[str] = None) -> Union[Mapping, bytes]:
-        headers = {
-            'X-GitHub-Api-Version': '2022-11-28',
-            'Accept': 'application/vnd.github.raw+json' if raw else 'application/vnd.github+json'
-        }
-        if github_token is not None:
-            headers['Authorization'] = 'Bearer ' + github_token
         response = requests.get(url, headers=headers)
-        status_code = response.status_code
-        if status_code != 200:
-            # https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28#exceeding-the-rate-limit
-            if (status_code == 403 or status_code == 429) and int(response.headers['x-ratelimit-remaining']) == 0:
-                reset_time = int(response.headers['x-ratelimit-reset'])
-                reset_utc = datetime.fromtimestamp(reset_time, timezone.utc)
-                reset_local = reset_utc.astimezone()
+        if response.status_code == 404:
+            return None
+        if response.status_code != 200:
+            # raw.githubusercontent.com is not under the REST API's hourly quota, but it can still
+            # throttle abusive traffic, and an authenticated request can still be limited.
+            # https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
+            remaining = response.headers.get('x-ratelimit-remaining')
+            if response.status_code in (403, 429) and remaining is not None and int(remaining) == 0:
+                reset_utc = datetime.fromtimestamp(int(response.headers['x-ratelimit-reset']), timezone.utc)
                 raise GithubRateLimitExceededError(
-                    f'GitHub API: rate limit exceeded. Wait until {reset_local} or use a custom GitHub access token')
-            raise DeveloperDiskImageException(f'GitHub API: request failed: {response.status_code}')
-        if raw:
-            content = response.content
-            if content is None:
-                DeveloperDiskImageException('GitHub API: no content returned')
-            return content
-        return json.loads(response.text)
+                    f'GitHub: rate limit exceeded. Wait until {reset_utc.astimezone()} '
+                    f'or use a custom GitHub access token')
+            raise DeveloperDiskImageException(f'GitHub: request for {path} failed: {response.status_code}')
+        return response.content

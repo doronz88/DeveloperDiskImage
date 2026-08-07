@@ -75,6 +75,10 @@ python3 -m pip install -U developer_disk_image
 
 ## Example usage
 
+Payloads are fetched from `raw.githubusercontent.com`, which is not subject to the REST API's
+60-requests-per-hour anonymous quota, so no GitHub token is needed. `create()` accepts a `ref`
+(branch, tag or commit) to read a revision other than `main`.
+
 ```python
 from developer_disk_image.repo import DeveloperDiskImageRepository
 
