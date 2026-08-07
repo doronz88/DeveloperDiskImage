@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>com.apple.MobileAsset.DDI</string>
+	<key>CFBundleVersion</key>
+	<string>27.1.5228.8</string>
+	<key>DeveloperModeRequired</key>
+	<true/>
+	<key>RequiredMountPath</key>
+	<string>/System/Developer</string>
+</dict>
+</plist>
