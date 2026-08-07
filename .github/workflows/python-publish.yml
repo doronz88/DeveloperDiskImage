@@ -1,31 +1,46 @@
-# This workflows will upload a Python Package using Twine when a release is created
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+# Uploads a Python package to PyPI when a release is created.
+#
+# Authentication uses PyPI Trusted Publishing (OpenID Connect) rather than a stored API token:
+# GitHub mints a short-lived credential for this workflow, so there is no long-lived secret to
+# leak or to silently expire. The trusted publisher must be registered once on PyPI, under
+# Manage project -> Publishing, matching owner/repository/workflow below.
+# https://docs.pypi.org/trusted-publishers/
 
 name: Upload Python Package
 
 on:
   release:
     types: [created]
+  # Allows re-publishing a tag whose release-triggered run failed, without cutting a new version.
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Tag to build and publish (e.g. v0.3.0)'
+        required: true
 
 jobs:
   deploy:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      # Required for Trusted Publishing; the job needs no repository secrets at all.
+      id-token: write
+
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        # setuptools_scm derives the version from tags, so the full history must be present.
+        fetch-depth: 0
+        ref: ${{ inputs.ref || github.ref }}
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
-    - name: Install dependencies
+    - name: Build
       run: |
         python -m pip install --upgrade pip
-        pip install -U build setuptools wheel twine
-    - name: Build and publish
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
+        pip install -U build
         python -m build
-        twine upload dist/*
+    - name: Publish
+      uses: pypa/gh-action-pypi-publish@release/v1
