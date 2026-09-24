@@ -25,8 +25,17 @@ image inside: `~/Library/Developer/DeveloperDiskImages`.
 | Directory | Consumed by |
 |---|---|
 | `DeveloperDiskImages/<version>/` | iOS < 17.0 |
-| `PersonalizedImages/Xcode_iOS_DDI_Personalized/` | the image mounter (`mounter auto-mount`) |
-| `PersonalizedImages/Xcode_iOS_DDI_Cryptex/` | `cryptexd` (`cryptex auto-install`) |
+| `PersonalizedImages/Xcode_iOS_DDI_Personalized/` | the image mounter (`mounter auto-mount` without an RSD tunnel) |
+| `PersonalizedImages/Xcode_iOS_DDI_Cryptex/` | `cryptexd` (`cryptex auto-install`, and `mounter auto-mount` over an RSD tunnel) |
+
+The two variants differ in which devices they can be personalized for. Every `PersonalizedDMG`
+build identity is tied to an `ApChipID`/`ApBoardID` pair, so it only covers the devices known when
+the DDI was built -- a device released afterwards (e.g. one past the last `SupportedProductTypes`
+entry) has no identity to request a ticket for. The Cryptex1 identity is device-agnostic
+(`Cryptex1,UseProductClass`, no chip or board), so the same assets install on newer devices too.
+This is why pymobiledevice3's `mounter auto-mount` prefers the Cryptex variant whenever it has an
+RSD tunnel. The Personalized variant is kept for released pymobiledevice3 versions, which fetch
+exactly its paths, and for connections without a tunnel.
 
 Every payload is published under a fixed file name, so download URLs stay predictable across
 releases:
