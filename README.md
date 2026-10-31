@@ -121,3 +121,21 @@ restore.mkdir(parents=True, exist_ok=True)
 for field, name in CRYPTEX_IMAGE_PAYLOADS.items():
     (restore / name).write_bytes(getattr(cryptex_disk_image, field))
 ```
+
+# Legal notice
+
+This repository is not affiliated with or endorsed by Apple Inc. Apple, iOS and Xcode are
+trademarks of Apple Inc.
+
+The disk images and their accompanying files are Apple's property, as shipped with Xcode.
+They are mirrored here solely for interoperability, mainly for Linux and Windows, where Xcode is
+not available: so developers there can use the developer services of their own devices.
+
+- The files are unmodified, except for the `Info.Path` key of the published
+  `BuildManifest.plist`, rewritten to match this repository's fixed file names.
+- Nothing here bypasses Apple's protections: on iOS 17 and later, every image still requires a
+  per-device signature issued by Apple's signing server before a device will mount it.
+- No fee is charged and nothing here is sold.
+
+**Rights holders:** to request removal, please open an issue or contact the
+[maintainer](https://github.com/doronz88). Valid requests will be honored promptly.
