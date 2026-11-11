@@ -16,6 +16,7 @@ Two repos move together: this one publishes the payloads, pymobiledevice3 (check
 3. **Prior attempts:** `gh pr list --state all --search '<build>'` in both repos.
 4. **Tell the user**, verbatim from the diff output: old → new build, added/removed `SupportedProductTypes`, added/removed boards — also when it is all "none" — plus any prior PR for this build and how it ended.
    If no model was added, or a prior PR for this build was closed unmerged, ask whether to proceed and stop until answered. A no-new-models update has been declined before (PRs opened, then closed).
+   The model list is not the only reason to update: the DDI carries the developer daemons (`dtdeviceinfod`, `dtremotedisplayd`, ...), so a newer one can change what the CoreDevice services reply. If the update is wanted for such a change, say so when asking, name the daemon and the observed difference between the two builds, and put that reason in both PR bodies. Example: 27A5228h's `dtdeviceinfod` reports neither `active` nor `backlightState` per display, 27B52's reports both, which pymobiledevice3 needs to pick a foldable's lit panel.
 5. **Branch from `origin/main`:** `git checkout -b bugfix/image-<build> origin/main --no-track`. Name taken by an earlier attempt → `git log origin/main..<branch>` to see what it holds, tell the user, and let them pick reuse or delete; do not `-B`/`-D` it silently.
 6. **Refresh payloads with the repo's script — never copy files by hand:**
    `uv run --script update_ddi.py` from the repo root (`--dry-run` to preview). It publishes both `Personalized` and `Cryptex` variants, verifies SHA-384 digests, and rewrites `Info.Path` to the fixed `Image.dmg*` names. Expect 8 changed files; "Wrote 0" means the branch already held this build.
@@ -33,5 +34,6 @@ Two repos move together: this one publishes the payloads, pymobiledevice3 (check
 | Branching or opening PRs before the model diff | User learns afterwards that nothing changed; PRs closed, stray branches left behind |
 | Alarm at `sha384 ok, 122/140 identities` | Expected: the other identities declare a shorter, non-SHA-384 digest of the same file |
 | `git add -A` | Sweeps unrelated untracked files into the PR |
+| Treating "no models added" as "nothing changed" | Misses behaviour changes in the DDI's daemons; a device can answer differently on the same iOS build depending on the mounted DDI (check with `pymobiledevice3 mounter list`) |
 
 `ddi_model_diff.py` reads the full Xcode manifest (Personalized and Cryptex identities both live in it). `--ref <git-ref>` compares against an older baseline; `--platform tvOS|watchOS|xrOS` for other DDIs (only iOS is published today).
