@@ -122,6 +122,16 @@ for field, name in CRYPTEX_IMAGE_PAYLOADS.items():
     (restore / name).write_bytes(getattr(cryptex_disk_image, field))
 ```
 
+# License
+
+The Python package and the scripts in this repository are released under the
+[MIT License](LICENSE).
+
+That license covers only this repository's own code. It does not cover, and grants no rights
+in, the disk images and their accompanying files under `DeveloperDiskImages/` and
+`PersonalizedImages/`: those are Apple's, see the legal notice below. They are not part of the
+Python package, which only downloads them on request.
+
 # Legal notice
 
 This repository is not affiliated with or endorsed by Apple Inc. Apple, iOS and Xcode are
