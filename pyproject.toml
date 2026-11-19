@@ -31,9 +31,6 @@ test = ["pytest"]
 "Homepage" = "https://github.com/doronz88/DeveloperDiskImage"
 "Bug Reports" = "https://github.com/doronz88/DeveloperDiskImage/issues"
 
-[project.scripts]
-developer_disk_image = "developer_disk_image.__main__:cli"
-
 [tool.setuptools.packages.find]
 exclude = ["docs*", "tests*", "PersonalizedImages*", "DeveloperDiskImages*"]
 
