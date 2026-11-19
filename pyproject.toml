@@ -3,7 +3,8 @@ name = "developer_disk_image"
 description = "Download DeveloperDiskImage ans Personalized images from GitHub"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 keywords = ["ios", "DeveloperDiskImage"]
 authors = [
     { name = "doronz88", email = "doron88@gmail.com" }
@@ -13,7 +14,6 @@ maintainers = [
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -31,9 +31,6 @@ test = ["pytest"]
 "Homepage" = "https://github.com/doronz88/DeveloperDiskImage"
 "Bug Reports" = "https://github.com/doronz88/DeveloperDiskImage/issues"
 
-[project.scripts]
-developer_disk_image = "developer_disk_image.__main__:cli"
-
 [tool.setuptools.packages.find]
 exclude = ["docs*", "tests*", "PersonalizedImages*", "DeveloperDiskImages*"]
 
@@ -45,5 +42,5 @@ version = { attr = "developer_disk_image._version.__version__" }
 version_file = "developer_disk_image/_version.py"
 
 [build-system]
-requires = ["setuptools>=43.0.0", "setuptools_scm>=8", "wheel"]
+requires = ["setuptools>=77.0.3", "setuptools_scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
